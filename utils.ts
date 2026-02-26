@@ -142,19 +142,28 @@ export const generateFilename = (type: FileTypeKey, data: FormState): string => 
       // Keeps strict Selects naming
       return `${YM}_IHP${_ihp}_${_tec}_${_prd}_${_scene}_SELECT_${_talent}_RETOUCHED`;
 
-    case 'screenshot': {
-      if (subType === 'still') {
-        const base = `SCREEN_${_prd}_SCENE${_scnNum}_${_keys}`;
-        if (isRetouched) return `${base}_RETOUCHED (${FULL_DATE})`;
-        return `${base} (${FULL_DATE})`;
-      }
-      // Video
-      // Prompt logic: TalentOrKeywords.
-      const tOrK = talentName ? _talent : _keys;
-      const base = `SCREEN_${_prd}_${_scene}_${tOrK}`;
-      if (isRetouched) return `${base}_RETOUCHED${_tc} (${FULL_DATE})`;
-      return `${base} (${FULL_DATE})`;
-    }
+case 'screenshot': {
+  // ✅ STILLS: SCREEN_PRD_SCENE01_description (mm.dd.yy)
+  if (subType === 'still') {
+    const raw = (sceneNum || '').replace(/\D/g, '');
+    let n = parseInt(raw, 10);
+    if (!Number.isFinite(n) || n < 1) n = 1;
+    if (n > 99) n = 99;
+    const stillIndex = String(n).padStart(2, '0');
+
+    const base = `SCREEN_${_prd}_${_scene}${stillIndex}_${_keys}`;
+    if (isRetouched) return `${base}_RETOUCHED (${FULL_DATE})`;
+    return `${base} (${FULL_DATE})`;
+  }
+
+  // ✅ VIDEO: Talent field acts as description (spaces -> hyphens)
+  const talentDesc = talentName ? formatKeywords(talentName) : '';
+  const tOrK = talentName ? talentDesc : _keys;
+
+  const base = `SCREEN_${_prd}_${_scene}_${tOrK}`;
+  if (isRetouched) return `${base}_RETOUCHED${_tc} (${FULL_DATE})`;
+  return `${base} (${FULL_DATE})`;
+}
 
     case 'stock':
       return `STOCK_${_plat}_${_vidNum}_${_keys}`;
@@ -168,7 +177,9 @@ export const generateFilename = (type: FileTypeKey, data: FormState): string => 
         parts.push('PCC', _talent);
       } else if (aiType === 'from_ihp') {
         parts.push('IHP', _talent);
-      } 
+      } else if (aiType === 'from_gmm') {
+        parts.push('GMM', _talent);
+      }
       // 2. Product Logic (if checked)
       else if (isProductVisible) {
         parts.push(_prd);
