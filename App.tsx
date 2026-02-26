@@ -210,30 +210,65 @@ const App: React.FC = () => {
         );
 
       case 'screenshot':
-        return (
-          <>
-             <div className="md:col-span-2">
-               <SegmentedControl 
-                  label="Source Type" 
-                  options={[{label: 'Video', value: 'video'}, {label: 'Still', value: 'still'}]} 
-                  value={formData.subType === 'still' ? 'still' : 'video'}
-                  onChange={(v) => setField('subType', v === 'sfx' ? 'sfx' : 'video')}
-                />
-            </div>
-            {commonDate}
-            {prdSelect}
-            {formData.subType === 'video' ? sceneSelect : sceneNumInput}
-            {formData.subType === 'video' ? talentInput : keywordsInput}
-            <div className="md:col-span-2 pt-2">
-              <Checkbox label="Retouched?" desc="Adds suffix & TC" checked={formData.isRetouched} onChange={(v) => setField('isRetouched', v)} />
-            </div>
-            {formData.isRetouched && formData.subType === 'video' && (
-                <div className="md:col-span-2 animate-in fade-in slide-in-from-top-2">
-                    {tcInput}
-                </div>
-            )}
-          </>
-        );
+  return (
+    <>
+      <div className="md:col-span-2">
+        <SegmentedControl
+          label="Source Type"
+          options={[
+            { label: 'Video', value: 'video' },
+            { label: 'Stills', value: 'still' },
+          ]}
+          value={formData.subType === 'still' ? 'still' : 'video'}
+          onChange={(v) => setField('subType', v)}   {/* ✅ FIX: ahora sí cambia */}
+        />
+      </div>
+
+      {commonDate}
+      {prdSelect}
+
+      {/* ✅ En ambos modos se elige Scene code (PH, BROLL, QUIZ, etc.) */}
+      {sceneSelect}
+
+      {/* ✅ Solo Stills: Still # (01, 02, 03...) */}
+      {formData.subType === 'still' && (
+        <TextInput
+          label="Still #"
+          placeholder="01"
+          value={formData.sceneNum}
+          onChange={(e) => setField('sceneNum', e.target.value)}
+        />
+      )}
+
+      {/* ✅ Video: Talent Name/Description  |  Stills: Keywords/Description */}
+      {formData.subType === 'video' ? (
+        <TextInput
+          label="Talent Name/Description"
+          placeholder="TalentName or Instagram comment"
+          value={formData.talentName}
+          onChange={(e) => setField('talentName', e.target.value)}
+        />
+      ) : (
+        keywordsInput
+      )}
+
+      <div className="md:col-span-2 pt-2">
+        <Checkbox
+          label="Retouched?"
+          desc="Adds suffix & TC"
+          checked={formData.isRetouched}
+          onChange={(v) => setField('isRetouched', v)}
+        />
+      </div>
+
+      {/* ✅ TC solo aplica a Video + Retouched */}
+      {formData.isRetouched && formData.subType === 'video' && (
+        <div className="md:col-span-2 animate-in fade-in slide-in-from-top-2">
+          {tcInput}
+        </div>
+      )}
+    </>
+  );
       
       case 'stock':
         return (
@@ -257,6 +292,7 @@ const App: React.FC = () => {
                 <option value="generic">AI Image/Footage (Standard)</option>
                 <option value="from_pcc">Based on PCC Asset</option>
                 <option value="from_ihp">Based on IHP Asset</option>
+                <option value="from_gmm">Based on GMM Asset</option>
               </select>
             </div>
             
@@ -277,7 +313,7 @@ const App: React.FC = () => {
             {/* Show PRD if explicitly Product-based or checking the box */}
             {(formData.aiType !== 'generic' || formData.isProductVisible) && prdSelect}
             
-            {(formData.aiType === 'from_pcc' || formData.aiType === 'from_ihp') && talentInput}
+            {(formData.aiType === 'from_pcc' || formData.aiType === 'from_ihp' || formData.aiType === 'from_gmm') && talentInput}
             {keywordsInput}
           </>
         );
@@ -302,7 +338,7 @@ const App: React.FC = () => {
             {commonDate}
             {prdSelect}
             <TextInput label="Video ID" placeholder="###.##" value={formData.vidNum} onChange={(e) => setField('vidNum', e.target.value)} />
-            <TextInput label="Sequence" placeholder="SEQ or T" value={formData.sequenceType} onChange={(e) => setField('sequenceType', e.target.value)} />
+            <TextInput label="Sequence/Title" placeholder="SEQ or T" value={formData.sequenceType} onChange={(e) => setField('sequenceType', e.target.value)} />
             
             {(formData.voType === 'gmm' || formData.voType === 'ai_gmm') && (
                <TextInput label="GMM Name" placeholder="Name" value={formData.gmmName} onChange={(e) => setField('gmmName', e.target.value)} />
