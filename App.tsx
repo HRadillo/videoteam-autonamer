@@ -244,7 +244,7 @@ const App: React.FC = () => {
       {formData.subType === 'video' ? (
         <TextInput
           label="Talent Name/Description"
-          placeholder="TalentName or Instagram comment"
+          placeholder="TalentName/Description"
           value={formData.talentName}
           onChange={(e) => setField('talentName', e.target.value)}
         />
