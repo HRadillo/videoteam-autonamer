@@ -220,7 +220,7 @@ const App: React.FC = () => {
             { label: 'Stills', value: 'still' },
           ]}
           value={formData.subType === 'still' ? 'still' : 'video'}
-          onChange={(v) => setField('subType', v)}   {/* ✅ FIX: ahora sí cambia */}
+          onChange={(v) => setField('subType', v)}
         />
       </div>
 
