@@ -437,7 +437,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1 className="font-bold text-xl leading-none text-white tracking-tight mb-1">Autonamer</h1>
-              <p className="text-[10px] font-bold text-brand uppercase tracking-widest leading-none">Video Team V2</p>
+              <p className="text-[10px] font-bold text-brand uppercase tracking-widest leading-none">Video Team V2.1</p>
             </div>
           </div>
         </div>
