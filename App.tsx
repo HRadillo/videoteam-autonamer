@@ -73,6 +73,28 @@ const App: React.FC = () => {
     if (val) setField(field, padNumber(val, length));
   };
 
+  const handleVidNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    let before = '';
+    let dotFound = false;
+    let after = '';
+    for (const ch of raw) {
+      if (/\d/.test(ch)) {
+        if (!dotFound) { if (before.length < 3) before += ch; }
+        else { if (after.length < 2) after += ch; }
+      } else if (ch === '.' && !dotFound && before.length === 3) {
+        dotFound = true;
+      }
+    }
+    setField('vidNum', before + (dotFound ? '.' + after : ''));
+  };
+
+  const handleSeqTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.toUpperCase();
+    const valid = [/^$/, /^S$/, /^SE$/, /^SEQ$/, /^SEQ[0-9]$/, /^T$/, /^T[0-9]$/];
+    if (valid.some(p => p.test(raw))) setField('sequenceType', raw);
+  };
+
   const generatedName = useMemo(() => generateFilename(activeType, formData), [activeType, formData]);
 
   const copyToClipboard = () => {
@@ -360,8 +382,8 @@ const App: React.FC = () => {
             </div>
             {commonDate}
             {prdSelect}
-            <TextInput label="Video ID" placeholder="###.##" value={formData.vidNum} onChange={(e) => setField('vidNum', e.target.value)} />
-            <TextInput label="Sequence/Title" placeholder="SEQ or T" value={formData.sequenceType} onChange={(e) => setField('sequenceType', e.target.value)} />
+            <TextInput label="Video ID" placeholder="###.##" value={formData.vidNum} onChange={handleVidNumChange} maxLength={6} />
+            <TextInput label="Sequence/Title" placeholder="SEQ1–9 or T1–9" value={formData.sequenceType} onChange={handleSeqTypeChange} maxLength={4} />
             
             {(formData.voType === 'gmm' || formData.voType === 'ai_gmm') && (
                <TextInput label="GMM Name" placeholder="Name" value={formData.gmmName} onChange={(e) => setField('gmmName', e.target.value)} />
