@@ -266,7 +266,7 @@ case 'screenshot': {
       // Format: AspectRatio_Nested_Nested-sequence-description
       // Example: 9x16_Nested_Product-Hero-animation
       const ratio = premiereAspectRatio || 'AspectRatio';
-      const desc = premiereNestedDesc
+      const desc = premiereNestedDesc?.trim()
         ? formatPremiereDesc(premiereNestedDesc)
         : 'nested-sequence-description';
       return `${ratio}_Nested_${desc}`;
@@ -279,10 +279,10 @@ case 'screenshot': {
       const _vid = formatVoVideoId(vidNum);
       const _tNum = premiereTitleNum || '#';
       const _vNum = premiereVersionNum || '#';
-      const _tDesc = premiereTitleDesc
+      const _tDesc = premiereTitleDesc?.trim()
         ? formatPremiereDesc(premiereTitleDesc)
         : 'description';
-      const _iDesc = premiereIntroDesc
+      const _iDesc = premiereIntroDesc?.trim()
         ? formatPremiereDesc(premiereIntroDesc)
         : 'description';
       return `${_prd}_${_pType}_${_vid}_T${_tNum}_V${_vNum}_title-${_tDesc}_intro-${_iDesc}`;
@@ -294,7 +294,7 @@ case 'screenshot': {
       const _pType = premiereType || 'TBYB';
       const _vid = formatVoVideoId(vidNum);
       const _sNum = premiereSeqNum || '#';
-      const _sDesc = premiereSeqDesc
+      const _sDesc = premiereSeqDesc?.trim()
         ? formatPremiereDesc(premiereSeqDesc)
         : 'description';
       return `${_prd}_${_pType}_${_vid}_SEQ${_sNum}_seq-${_sDesc}`;
