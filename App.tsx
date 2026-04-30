@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { FILE_TYPES, PRD_OPTIONS, TEC_OPTIONS, SCENE_OPTIONS, PLATFORM_OPTIONS } from './constants';
+import { FILE_TYPES, PRD_OPTIONS, TEC_OPTIONS, SCENE_OPTIONS, PLATFORM_OPTIONS, ASPECT_RATIO_OPTIONS } from './constants';
 import { FormState, FileTypeKey, FileTypeConfig } from './types';
 import { generateFilename, padNumber } from './utils';
 import { TextInput, Select, Card, ActionButton, SegmentedControl, Checkbox, SectionLabel, MultiSelect } from './components/UI';
@@ -42,6 +42,17 @@ const INITIAL_STATE: FormState = {
   isRetouched: false,
   isProductVisible: false,
   isCeleb: false,
+
+  // Premiere fields
+  premiereType: 'TBYB',
+  premiereAspectRatio: '',
+  premiereNestedDesc: '',
+  premiereTitleNum: '',
+  premiereVersionNum: '',
+  premiereTitleDesc: '',
+  premiereIntroDesc: '',
+  premiereSeqNum: '',
+  premiereSeqDesc: '',
 };
 
 const App: React.FC = () => {
@@ -407,9 +418,9 @@ const App: React.FC = () => {
         return (
           <>
              <div className="md:col-span-2">
-               <SegmentedControl 
-                  label="Audio Type" 
-                  options={[{label: 'Music', value: 'music'}, {label: 'SFX', value: 'sfx'}]} 
+               <SegmentedControl
+                  label="Audio Type"
+                  options={[{label: 'Music', value: 'music'}, {label: 'SFX', value: 'sfx'}]}
                   value={formData.subType === 'sfx' ? 'sfx' : 'music'}
                   onChange={(v) => setField('subType', v === 'sfx' ? 'sfx' : 'video')}
                 />
@@ -439,6 +450,111 @@ const App: React.FC = () => {
                   />
                 </>)
             }
+          </>
+        );
+
+      case 'premiere_nested':
+        return (
+          <>
+            <Select
+              label="Aspect Ratio"
+              options={ASPECT_RATIO_OPTIONS}
+              value={formData.premiereAspectRatio}
+              onChange={(e) => setField('premiereAspectRatio', e.target.value)}
+            />
+            <div className="flex flex-col space-y-1.5">
+              <label className="text-xs font-medium text-zinc-400 ml-1">Static Segment</label>
+              <div className="bg-black/40 border border-white/10 text-zinc-500 text-sm rounded-xl px-4 py-3 font-mono">Nested</div>
+            </div>
+            <div className="md:col-span-2">
+              <TextInput
+                label="Sequence Description"
+                placeholder="Product-Hero-animation"
+                value={formData.premiereNestedDesc}
+                onChange={(e) => setField('premiereNestedDesc', e.target.value)}
+              />
+            </div>
+          </>
+        );
+
+      case 'premiere_intro':
+        return (
+          <>
+            {prdSelect}
+            <SegmentedControl
+              label="Type"
+              options={[{ label: 'TBYB', value: 'TBYB' }, { label: 'TRIAL', value: 'TRIAL' }]}
+              value={formData.premiereType}
+              onChange={(v) => setField('premiereType', v)}
+            />
+            <TextInput
+              label="Video ID"
+              placeholder="###.##"
+              value={formData.vidNum}
+              onChange={handleVidNumChange}
+              maxLength={6}
+            />
+            <TextInput
+              label="T#"
+              placeholder="1"
+              value={formData.premiereTitleNum}
+              onChange={(e) => setField('premiereTitleNum', e.target.value.replace(/\D/g, ''))}
+              maxLength={2}
+            />
+            <TextInput
+              label="V#"
+              placeholder="1"
+              value={formData.premiereVersionNum}
+              onChange={(e) => setField('premiereVersionNum', e.target.value.replace(/\D/g, ''))}
+              maxLength={2}
+            />
+            <TextInput
+              label="Title Description"
+              placeholder="offcam"
+              value={formData.premiereTitleDesc}
+              onChange={(e) => setField('premiereTitleDesc', e.target.value)}
+            />
+            <TextInput
+              label="Intro Description"
+              placeholder="briannahero"
+              value={formData.premiereIntroDesc}
+              onChange={(e) => setField('premiereIntroDesc', e.target.value)}
+            />
+          </>
+        );
+
+      case 'premiere_normal':
+        return (
+          <>
+            {prdSelect}
+            <SegmentedControl
+              label="Type"
+              options={[{ label: 'TBYB', value: 'TBYB' }, { label: 'TRIAL', value: 'TRIAL' }]}
+              value={formData.premiereType}
+              onChange={(v) => setField('premiereType', v)}
+            />
+            <TextInput
+              label="Video ID"
+              placeholder="###.##"
+              value={formData.vidNum}
+              onChange={handleVidNumChange}
+              maxLength={6}
+            />
+            <TextInput
+              label="SEQ#"
+              placeholder="1"
+              value={formData.premiereSeqNum}
+              onChange={(e) => setField('premiereSeqNum', e.target.value.replace(/\D/g, ''))}
+              maxLength={2}
+            />
+            <div className="md:col-span-2">
+              <TextInput
+                label="Sequence Description"
+                placeholder="oliviapply"
+                value={formData.premiereSeqDesc}
+                onChange={(e) => setField('premiereSeqDesc', e.target.value)}
+              />
+            </div>
           </>
         );
 

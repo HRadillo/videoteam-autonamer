@@ -44,6 +44,14 @@ export const PLATFORM_OPTIONS: DropdownOption[] = [
   { value: 'ELEVENLABS', label: 'ELEVENLABS', desc: 'ElevenLabs' },
 ];
 
+export const ASPECT_RATIO_OPTIONS: DropdownOption[] = [
+  { value: '9x16', label: '9x16', desc: 'Vertical (TikTok / Reels)' },
+  { value: '16x9', label: '16x9', desc: 'Horizontal (YouTube / Desktop)' },
+  { value: '1x1', label: '1x1', desc: 'Square (Instagram Feed)' },
+  { value: '4x5', label: '4x5', desc: 'Portrait (Instagram Feed)' },
+  { value: '4x3', label: '4x3', desc: 'Standard (Legacy)' },
+];
+
 // --- FILE TYPE CONFIGURATION ---
 
 export const FILE_TYPES: FileTypeConfig[] = [
@@ -101,5 +109,22 @@ export const FILE_TYPES: FileTypeConfig[] = [
     id: 'audio_assets',
     label: 'Music & SFX',
     group: 'Audio',
+  },
+
+  // PREMIERE
+  {
+    id: 'premiere_nested',
+    label: 'Nested Sequence',
+    group: 'Premiere',
+  },
+  {
+    id: 'premiere_intro',
+    label: 'Attached Intro Sequence',
+    group: 'Premiere',
+  },
+  {
+    id: 'premiere_normal',
+    label: 'Attached Normal Sequence',
+    group: 'Premiere',
   },
 ];

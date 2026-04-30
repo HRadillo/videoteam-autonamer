@@ -43,6 +43,12 @@ export const formatVoVideoId = (raw: string): string => {
   return `vid${cleaned}`;
 };
 
+export const formatPremiereDesc = (text: string): string => {
+  // Trim and replace spaces with hyphens; preserve user casing
+  if (!text) return '';
+  return text.trim().replace(/\s+/g, '-');
+};
+
 // --- PRODUCT ORDERING ---
 // Naming rule: ACN first, then all other products, then FOU, then CNC.
 // Example: ACN_ASU_FOU_CNC
@@ -70,14 +76,17 @@ export const sortProductCodes = (codes: string[]): string[] => {
 // --- MAIN GENERATOR ---
 
 export const generateFilename = (type: FileTypeKey, data: FormState): string => {
-  const { 
-    date, ihpNum, micNum, tec, prd, scene, sceneNum, 
+  const {
+    date, ihpNum, micNum, tec, prd, scene, sceneNum,
     talentName, celebName, keywords, vidNum, platform, songName,
-    composerName, 
+    composerName,
     sequenceType, gmmName, voiceName, timecode,
     subType, voType, aiType,
     aiNoVisibleProduct, aiProducts,
-    isGreenScreen, isProductVisible, isCeleb, isRetouched 
+    isGreenScreen, isProductVisible, isCeleb, isRetouched,
+    premiereType, premiereAspectRatio, premiereNestedDesc,
+    premiereTitleNum, premiereVersionNum, premiereTitleDesc, premiereIntroDesc,
+    premiereSeqNum, premiereSeqDesc,
   } = data;
 
   const YM = formatDateYearMo(date);
@@ -247,10 +256,48 @@ case 'screenshot': {
 
     case 'audio_assets': {
       if (subType === 'sfx') {
-        return `SFX_${_plat}_${_keys}`; 
+        return `SFX_${_plat}_${_keys}`;
       }
       // Music
       return `MUSIC_${_plat}_${_song}${_composer ? `By${_composer}` : ''}`;
+    }
+
+    case 'premiere_nested': {
+      // Format: AspectRatio_Nested_Nested-sequence-description
+      // Example: 9x16_Nested_Product-Hero-animation
+      const ratio = premiereAspectRatio || 'AspectRatio';
+      const desc = premiereNestedDesc
+        ? formatPremiereDesc(premiereNestedDesc)
+        : 'nested-sequence-description';
+      return `${ratio}_Nested_${desc}`;
+    }
+
+    case 'premiere_intro': {
+      // Format: PRODUCT_TBYB|TRIAL_vid###.##_T#_V#_title-description_intro-description
+      // Example: CNC_TBYB_vid002.01_T1_V1_title-offcam_intro-briannahero
+      const _pType = premiereType || 'TBYB';
+      const _vid = formatVoVideoId(vidNum);
+      const _tNum = premiereTitleNum || '#';
+      const _vNum = premiereVersionNum || '#';
+      const _tDesc = premiereTitleDesc
+        ? formatPremiereDesc(premiereTitleDesc)
+        : 'description';
+      const _iDesc = premiereIntroDesc
+        ? formatPremiereDesc(premiereIntroDesc)
+        : 'description';
+      return `${_prd}_${_pType}_${_vid}_T${_tNum}_V${_vNum}_title-${_tDesc}_intro-${_iDesc}`;
+    }
+
+    case 'premiere_normal': {
+      // Format: PRODUCT_TBYB|TRIAL_vid###.##_SEQ#_seq-description
+      // Example: CNC_TBYB_vid002.01_SEQ1_seq-oliviapply
+      const _pType = premiereType || 'TBYB';
+      const _vid = formatVoVideoId(vidNum);
+      const _sNum = premiereSeqNum || '#';
+      const _sDesc = premiereSeqDesc
+        ? formatPremiereDesc(premiereSeqDesc)
+        : 'description';
+      return `${_prd}_${_pType}_${_vid}_SEQ${_sNum}_seq-${_sDesc}`;
     }
 
     default:
