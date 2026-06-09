@@ -106,6 +106,25 @@ const App: React.FC = () => {
     if (valid.some(p => p.test(raw))) setField('sequenceType', raw);
   };
 
+  const handleSceneNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (!raw) {
+      setField('sceneNum', '');
+      return;
+    }
+
+    setField('sceneNum', raw);
+  };
+
+  const handleSceneNumBlur = () => {
+    const raw = formData.sceneNum.replace(/\D/g, '');
+    if (!raw) return;
+    const next = raw.length <= 2
+      ? Math.min(Math.max(Number(raw), 1), 99).toString().padStart(2, '0')
+      : raw.slice(0, 4);
+    setField('sceneNum', next);
+  };
+
   const sanitizeSceneCode = (value: string) => {
     return value.toUpperCase().replace(/[^A-Z0-9]/g, '');
   };
@@ -163,7 +182,7 @@ const App: React.FC = () => {
     const keywordsInput = <TextInput label="Keywords / Description" placeholder="e.g. green screen happy" value={formData.keywords} onChange={(e) => setField('keywords', e.target.value)} />;
     const ihpInput = <TextInput label="IHP #" placeholder="001" value={formData.ihpNum} onChange={(e) => setField('ihpNum', e.target.value)} onBlur={() => handleBlurNumber('ihpNum', 3)} />;
     const micInput = <TextInput label="MIC #" placeholder="001" value={formData.micNum} onChange={(e) => setField('micNum', e.target.value)} onBlur={() => handleBlurNumber('micNum', 3)} />;
-    const sceneNumInput = <TextInput label="Scene #" placeholder="01" value={formData.sceneNum} onChange={(e) => setField('sceneNum', e.target.value)} onBlur={() => handleBlurNumber('sceneNum', 2)} />;
+    const sceneNumInput = <TextInput label="Photo #" placeholder="01 or 7141" value={formData.sceneNum} onChange={handleSceneNumChange} onBlur={handleSceneNumBlur} inputMode="numeric" maxLength={4} />;
     const tcInput = <TextInput label="Start Frame / TC" placeholder="000000" value={formData.timecode} onChange={(e) => setField('timecode', e.target.value)} />;
 
     // Conditional Rendering Block
@@ -226,7 +245,8 @@ const App: React.FC = () => {
             {commonDate}
             {prdSelect}
             {formData.isCeleb ? celebInput : talentInput}
-            {formData.subType === 'photo' && sceneNumInput}
+            {formData.subType === 'photo' && !formData.isCeleb && sceneSelect}
+            {formData.subType === 'photo' && !formData.isCeleb && sceneNumInput}
             
             <div className="md:col-span-2 pt-2 flex flex-wrap gap-4">
               <Checkbox label="Green Screen?" desc="Adds GS suffix" checked={formData.isGreenScreen} onChange={(v) => setField('isGreenScreen', v)} />

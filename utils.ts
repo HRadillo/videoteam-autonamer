@@ -9,6 +9,16 @@ export const padNumber = (val: string, length: number): string => {
   return cleanVal.padStart(length, '0');
 };
 
+export const formatSceneNumber = (val: string): string => {
+  const cleanVal = (val || '').replace(/\D/g, '');
+  if (!cleanVal) return '##';
+  if (cleanVal.length <= 2) {
+    const clamped = Math.min(Math.max(Number(cleanVal), 1), 99);
+    return clamped.toString().padStart(2, '0');
+  }
+  return cleanVal.slice(0, 4);
+};
+
 export const formatTalentName = (name: string): string => {
   if (!name) return 'TalentName';
   return name
@@ -101,7 +111,7 @@ export const generateFilename = (type: FileTypeKey, data: FormState): string => 
   // Defaults
   const _ihp = padNumber(ihpNum, 3);
   const _mic = padNumber(micNum, 3);
-  const _scnNum = padNumber(sceneNum, 2);
+  const _scnNum = formatSceneNumber(sceneNum);
   const _vidNum = vidNum || '###.##'; 
   const _tec = tec || 'TEC';
   const _prd = formatProductCodes(prd);
@@ -175,9 +185,9 @@ export const generateFilename = (type: FileTypeKey, data: FormState): string => 
 
       // STANDARD PCC
       if (subType === 'photo') {
-        const base = `PCC_${_prd}_${_talent}_SCENE${_scnNum}`;
-        if (isRetouched) return `${base}_RETOUCHED (${FULL_DATE})`; // Assuming still retouch style
-        return `${base} (${FULL_DATE})`;
+        const base = `${YM}_PCC_${_prd}_${_scene}${_scnNum}_${_talent}`;
+        if (isRetouched) return `${base}_RETOUCHED`;
+        return base;
       }
 
       // Video
