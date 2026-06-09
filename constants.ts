@@ -32,7 +32,6 @@ export const SCENE_OPTIONS: DropdownOption[] = [
   { value: 'GS', label: 'GS', desc: 'Green Screen' },
   { value: 'QUIZ', label: 'QUIZ', desc: 'Quiz Part' },
   { value: 'BROLL', label: 'BROLL', desc: 'B-Roll' },
-  { value: 'RTT', label: 'RTT', desc: 'Real Time Transformation' },
 ];
 
 export const PLATFORM_OPTIONS: DropdownOption[] = [

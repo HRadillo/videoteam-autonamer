@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { FILE_TYPES, PRD_OPTIONS, TEC_OPTIONS, SCENE_OPTIONS, PLATFORM_OPTIONS, ASPECT_RATIO_OPTIONS } from './constants';
 import { FormState, FileTypeKey, FileTypeConfig } from './types';
 import { generateFilename, padNumber } from './utils';
-import { TextInput, Select, Card, ActionButton, SegmentedControl, Checkbox, SectionLabel, MultiSelect } from './components/UI';
+import { TextInput, Select, Card, ActionButton, SegmentedControl, Checkbox, SectionLabel, MultiSelect, CodeInput } from './components/UI';
 import { CopyIcon, CheckIcon, InfoIcon, MagicIcon, VideoIcon } from './components/Icons';
 
 import { INTRO_THEME, HOOK_THEME, AUDIO, CONCEPT_THEME_GUIDES } from './lexiconData';
@@ -106,6 +106,10 @@ const App: React.FC = () => {
     if (valid.some(p => p.test(raw))) setField('sequenceType', raw);
   };
 
+  const handleSceneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setField('scene', e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''));
+  };
+
   const generatedName = useMemo(() => generateFilename(activeType, formData), [activeType, formData]);
 
   const copyToClipboard = () => {
@@ -128,9 +132,26 @@ const App: React.FC = () => {
       </div>
     );
 
-    const prdSelect = <Select label="Product" options={PRD_OPTIONS} value={formData.prd} onChange={(e) => setField('prd', e.target.value)} />;
+    const productValues = formData.prd ? formData.prd.split('_').filter(Boolean) : [];
+    const prdSelect = (
+      <MultiSelect
+        label="Product(s)"
+        options={PRD_OPTIONS}
+        values={productValues}
+        onChange={(vals) => setField('prd', vals.join('_'))}
+        placeholder="Type to search..."
+      />
+    );
     const tecSelect = <Select label="Technology" options={TEC_OPTIONS} value={formData.tec} onChange={(e) => setField('tec', e.target.value)} />;
-    const sceneSelect = <Select label="Scene Type" options={SCENE_OPTIONS} value={formData.scene} onChange={(e) => setField('scene', e.target.value)} />;
+    const sceneSelect = (
+      <CodeInput
+        label="Scene Type"
+        options={SCENE_OPTIONS}
+        placeholder="PH, BFORE, APPLY..."
+        value={formData.scene}
+        onChange={handleSceneChange}
+      />
+    );
     
     const platformInput = <TextInput label="Platform" placeholder="e.g. Shutterstock" value={formData.platform} onChange={(e) => setField('platform', e.target.value)} />;
     
@@ -173,9 +194,9 @@ const App: React.FC = () => {
             
             <div className="md:col-span-2 pt-2 flex flex-wrap gap-4">
               <Checkbox label="Green Screen?" desc="Adds GS suffix" checked={formData.isGreenScreen} onChange={(v) => setField('isGreenScreen', v)} />
-              <Checkbox label="Retouched?" desc="Adds suffix & TC" checked={formData.isRetouched} onChange={(v) => setField('isRetouched', v)} />
+              <Checkbox label="Retouched?" desc={formData.subType === 'photo' ? 'Adds suffix' : 'Adds suffix & TC'} checked={formData.isRetouched} onChange={(v) => setField('isRetouched', v)} />
             </div>
-            {formData.isRetouched && (
+            {formData.isRetouched && formData.subType !== 'photo' && (
                 <div className="md:col-span-2 animate-in fade-in slide-in-from-top-2">
                     {tcInput}
                 </div>
@@ -206,9 +227,9 @@ const App: React.FC = () => {
             
             <div className="md:col-span-2 pt-2 flex flex-wrap gap-4">
               <Checkbox label="Green Screen?" desc="Adds GS suffix" checked={formData.isGreenScreen} onChange={(v) => setField('isGreenScreen', v)} />
-              <Checkbox label="Retouched?" desc="Adds suffix & TC" checked={formData.isRetouched} onChange={(v) => setField('isRetouched', v)} />
+              <Checkbox label="Retouched?" desc={formData.subType === 'photo' ? 'Adds suffix' : 'Adds suffix & TC'} checked={formData.isRetouched} onChange={(v) => setField('isRetouched', v)} />
             </div>
-            {formData.isRetouched && (
+            {formData.isRetouched && formData.subType !== 'photo' && (
                 <div className="md:col-span-2 animate-in fade-in slide-in-from-top-2">
                     {tcInput}
                 </div>

@@ -73,6 +73,12 @@ export const sortProductCodes = (codes: string[]): string[] => {
   });
 };
 
+export const formatProductCodes = (value: string): string => {
+  const codes = (value || '').split('_');
+  const sorted = sortProductCodes(codes);
+  return sorted.length > 0 ? sorted.join('_') : 'PRD';
+};
+
 // --- MAIN GENERATOR ---
 
 export const generateFilename = (type: FileTypeKey, data: FormState): string => {
@@ -98,7 +104,7 @@ export const generateFilename = (type: FileTypeKey, data: FormState): string => 
   const _scnNum = padNumber(sceneNum, 2);
   const _vidNum = vidNum || '###.##'; 
   const _tec = tec || 'TEC';
-  const _prd = prd || 'PRD';
+  const _prd = formatProductCodes(prd);
   const _scene = scene || 'SCENE';
   const _plat = platform ? platform.trim().toUpperCase().replace(/\s+/g, '') : 'PLATFORM';
   
@@ -137,6 +143,7 @@ export const generateFilename = (type: FileTypeKey, data: FormState): string => 
       if (isCeleb) {
         // YEAR.MO_IHP_TEC_PRD_CELEB_CelebFullName
         const base = `${YM}_IHP_${_tec}_${_prd}_CELEB_${_celeb}`;
+        if (isRetouched && subType === 'photo') return `${base}_RETOUCHED`;
         if (isRetouched) return `${base}_retouched${_tc} [TC-IN]`;
         return base;
       }
@@ -161,6 +168,7 @@ export const generateFilename = (type: FileTypeKey, data: FormState): string => 
       if (isCeleb) {
         // CELEB_PRD_CelebFullName (mm.dd.yy)
         const base = `CELEB_${_prd}_${_celeb}`;
+        if (isRetouched && subType === 'photo') return `${base}_RETOUCHED (${FULL_DATE})`;
         if (isRetouched) return `${base}_retouched${_tc} (${FULL_DATE})`;
         return `${base} (${FULL_DATE})`;
       }
