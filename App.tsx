@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { FILE_TYPES, PRD_OPTIONS, TEC_OPTIONS, SCENE_OPTIONS, PLATFORM_OPTIONS, ASPECT_RATIO_OPTIONS } from './constants';
 import { FormState, FileTypeKey, FileTypeConfig } from './types';
 import { generateFilename, padNumber } from './utils';
-import { TextInput, Select, Card, ActionButton, SegmentedControl, Checkbox, SectionLabel, MultiSelect, CodeInput } from './components/UI';
+import { TextInput, Select, Card, ActionButton, SegmentedControl, Checkbox, SectionLabel, MultiSelect } from './components/UI';
 import { CopyIcon, CheckIcon, InfoIcon, MagicIcon, VideoIcon } from './components/Icons';
 
 import { INTRO_THEME, HOOK_THEME, AUDIO, CONCEPT_THEME_GUIDES } from './lexiconData';
@@ -144,13 +144,22 @@ const App: React.FC = () => {
     );
     const tecSelect = <Select label="Technology" options={TEC_OPTIONS} value={formData.tec} onChange={(e) => setField('tec', e.target.value)} />;
     const sceneSelect = (
-      <CodeInput
-        label="Scene Type"
-        options={SCENE_OPTIONS}
-        placeholder="PH, BFORE, APPLY..."
-        value={formData.scene}
-        onChange={handleSceneChange}
-      />
+      <>
+        <TextInput
+          label="Scene Type"
+          placeholder="PH, BFORE, APPLY..."
+          value={formData.scene}
+          onChange={handleSceneChange}
+          list="scene-code-options"
+        />
+        <datalist id="scene-code-options">
+          {SCENE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.desc || opt.label}
+            </option>
+          ))}
+        </datalist>
+      </>
     );
     
     const platformInput = <TextInput label="Platform" placeholder="e.g. Shutterstock" value={formData.platform} onChange={(e) => setField('platform', e.target.value)} />;

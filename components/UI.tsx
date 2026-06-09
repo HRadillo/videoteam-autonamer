@@ -97,7 +97,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
   const toggle = (val: string) => {
     if (values.includes(val)) onChange(values.filter(v => v !== val));
-    else onChange([...values, val].sort());
+    else onChange([...values, val]);
   };
 
   return (
@@ -114,6 +114,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
         <div className="mt-3 max-h-44 overflow-y-auto pr-1 space-y-2">
           {filtered.map((opt) => {
             const checked = values.includes(opt.value);
+            const selectionIndex = values.indexOf(opt.value);
             return (
               <button
                 type="button"
@@ -131,9 +132,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                   }`}
                 >
                   {checked && (
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <span className="text-[10px] font-bold leading-none">#{selectionIndex + 1}</span>
                   )}
                 </div>
                 <div className="flex-1">
@@ -152,8 +151,13 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
         </div>
 
         {values.length > 0 && (
-          <div className="mt-3 text-[11px] text-zinc-500">
-            Selected: <span className="font-mono text-zinc-300">{values.join('_')}</span>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {values.map((value, index) => (
+              <span key={value} className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] text-zinc-300">
+                <span className="font-bold text-brand">#{index + 1}</span>
+                <span className="font-mono">{value}</span>
+              </span>
+            ))}
           </div>
         )}
       </div>
