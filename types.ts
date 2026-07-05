@@ -67,10 +67,12 @@ export type FileTypeKey =
   | 'premiere_intro'
   | 'premiere_normal';
 
+export type FileTypeGroup = 'Production' | 'Social' | 'Assets' | 'AI' | 'Audio' | 'Premiere';
+
 export interface FileTypeConfig {
   id: FileTypeKey;
   label: string;
-  group: 'Production' | 'Social' | 'Assets' | 'AI' | 'Audio' | 'Premiere';
+  group: FileTypeGroup;
 }
 
 export interface DropdownOption {
