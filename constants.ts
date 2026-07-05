@@ -1,4 +1,4 @@
-import { DropdownOption, FileTypeConfig } from './types';
+import type { DropdownOption, FileTypeConfig } from './types';
 
 // --- DATA DICTIONARIES ---
 

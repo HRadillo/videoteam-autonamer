@@ -1,4 +1,4 @@
-import { FormState, FileTypeKey } from './types';
+import type { FormState, FileTypeKey } from './types';
 
 // --- HELPERS ---
 
@@ -33,15 +33,15 @@ export const formatKeywords = (text: string): string => {
 };
 
 export const formatDateYearMo = (date: Date): string => {
-  const y = date.getFullYear();
-  const m = (date.getMonth() + 1).toString().padStart(2, '0');
+  const y = date.getUTCFullYear();
+  const m = (date.getUTCMonth() + 1).toString().padStart(2, '0');
   return `${y}.${m}`;
 };
 
 export const formatDateFull = (date: Date): string => {
-  const m = (date.getMonth() + 1).toString().padStart(2, '0');
-  const d = date.getDate().toString().padStart(2, '0');
-  const y = date.getFullYear().toString().slice(-2);
+  const m = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+  const d = date.getUTCDate().toString().padStart(2, '0');
+  const y = date.getUTCFullYear().toString().slice(-2);
   return `${m}.${d}.${y}`;
 };
 
@@ -99,7 +99,7 @@ export const generateFilename = (type: FileTypeKey, data: FormState): string => 
     sequenceType, gmmName, voiceName, timecode,
     subType, voType, aiType,
     aiNoVisibleProduct, aiProducts,
-    isGreenScreen, isProductVisible, isCeleb, isRetouched,
+    isGreenScreen, isCeleb, isRetouched,
     premiereType, premiereAspectRatio, premiereNestedDesc,
     premiereTitleNum, premiereVersionNum, premiereTitleDesc, premiereIntroDesc,
     premiereSeqNum, premiereSeqDesc,

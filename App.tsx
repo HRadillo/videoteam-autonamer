@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { FILE_TYPES, PRD_OPTIONS, TEC_OPTIONS, SCENE_OPTIONS, PLATFORM_OPTIONS, ASPECT_RATIO_OPTIONS } from './constants';
-import { FormState, FileTypeKey, FileTypeConfig } from './types';
+import { FILE_TYPES, PRD_OPTIONS, TEC_OPTIONS, SCENE_OPTIONS, ASPECT_RATIO_OPTIONS } from './constants';
+import { FormState, FileTypeKey, FileTypeConfig, FileTypeGroup } from './types';
 import { generateFilename, padNumber } from './utils';
 import { TextInput, Select, Card, ActionButton, SegmentedControl, Checkbox, SectionLabel, MultiSelect, SearchableSelect } from './components/UI';
 import { CopyIcon, CheckIcon, InfoIcon, MagicIcon, VideoIcon } from './components/Icons';
@@ -8,7 +8,7 @@ import { CopyIcon, CheckIcon, InfoIcon, MagicIcon, VideoIcon } from './component
 import { INTRO_THEME, HOOK_THEME, AUDIO, CONCEPT_THEME_GUIDES } from './lexiconData';
 
 // --- INITIAL STATE ---
-const INITIAL_STATE: FormState = {
+const createInitialFormState = (): FormState => ({
   date: new Date(),
   ihpNum: '',
   micNum: '',
@@ -53,11 +53,20 @@ const INITIAL_STATE: FormState = {
   premiereIntroDesc: '',
   premiereSeqNum: '',
   premiereSeqDesc: '',
-};
+});
+
+const createInitialGroupStates = (): Record<FileTypeGroup, FormState> => ({
+  Production: createInitialFormState(),
+  Social: createInitialFormState(),
+  Assets: createInitialFormState(),
+  AI: createInitialFormState(),
+  Audio: createInitialFormState(),
+  Premiere: createInitialFormState(),
+});
 
 const App: React.FC = () => {
   const [activeType, setActiveType] = useState<FileTypeKey>('ihp');
-  const [formData, setFormData] = useState<FormState>(INITIAL_STATE);
+  const [formDataByGroup, setFormDataByGroup] = useState<Record<FileTypeGroup, FormState>>(createInitialGroupStates);
   const [copied, setCopied] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [lexiconPage, setLexiconPage] = useState<'lexicon' | 'themes'>('lexicon');
@@ -73,10 +82,22 @@ const App: React.FC = () => {
   }, []);
 
   const currentConfig: FileTypeConfig = FILE_TYPES.find(t => t.id === activeType) || FILE_TYPES[0];
+  const activeGroup = currentConfig.group;
+  const formData = formDataByGroup[activeGroup];
 
   // Helper to update state
   const setField = (field: keyof FormState, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormDataByGroup(prev => ({
+      ...prev,
+      [activeGroup]: {
+        ...prev[activeGroup],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleTypeChange = (nextType: FileTypeKey) => {
+    setActiveType(nextType);
   };
 
   const handleBlurNumber = (field: keyof FormState, length: number) => {
@@ -146,7 +167,10 @@ const App: React.FC = () => {
           type="date"
           className="bg-black/40 border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-brand transition-all [color-scheme:dark]"
           value={formData.date.toISOString().split('T')[0]}
-          onChange={(e) => setField('date', new Date(e.target.value))}
+          onChange={(e) => {
+            if (!e.target.value) return;
+            setField('date', new Date(`${e.target.value}T00:00:00.000Z`));
+          }}
         />
       </div>
     );
@@ -632,17 +656,7 @@ const App: React.FC = () => {
                 {(types as FileTypeConfig[]).map((type) => (
                   <button
                     key={type.id}
-                    onClick={() => {
-                        setActiveType(type.id);
-                        // Reset defaults on switch
-                        setField('subType', type.id === 'ihp' ? 'video' : type.id === 'pcc' ? 'video' : 'video');
-                        setField('isCeleb', false);
-                        setField('isRetouched', false);
-                        setField('isProductVisible', false);
-                        setField('aiNoVisibleProduct', false);
-                        setField('aiProducts', []);
-                        setField('timecode', '');
-                    }}
+                    onClick={() => handleTypeChange(type.id)}
                     className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
                       activeType === type.id 
                         ? 'bg-brand/20 text-brand font-medium border border-brand/10 shadow-[0_0_10px_rgba(246,244,157,0.1)]' 
@@ -662,8 +676,8 @@ const App: React.FC = () => {
       <main className="flex-1 flex flex-col h-full relative overflow-hidden">
         
         {/* MOBILE HEADER */}
-        <div className="md:hidden p-4 border-b border-white/10 flex justify-between items-center bg-zinc-900/50 backdrop-blur-md">
-            <div className="flex items-center gap-2">
+        <div className="md:hidden p-4 border-b border-white/10 flex items-center gap-2 bg-zinc-900/50 backdrop-blur-md">
+            <div className="flex shrink-0 items-center gap-2">
                  <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
                     <VideoIcon className="w-4 h-4 text-black" />
                  </div>
@@ -673,16 +687,16 @@ const App: React.FC = () => {
                  </div>
             </div>
             <select 
-                className="bg-black text-xs border border-white/20 rounded p-1"
+                className="min-w-0 flex-1 max-w-48 bg-black text-xs border border-white/20 rounded p-1"
                 value={activeType}
-                onChange={(e) => setActiveType(e.target.value as FileTypeKey)}
+                onChange={(e) => handleTypeChange(e.target.value as FileTypeKey)}
             >
                 {FILE_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
         </div>
 
         {/* SCROLLABLE AREA */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-10 pb-40">
+        <div className="flex-1 overflow-y-auto p-4 pb-4 md:p-10 md:pb-40">
           <div className="max-w-4xl mx-auto space-y-8">
             
             {/* Header Section */}
@@ -724,7 +738,7 @@ const App: React.FC = () => {
         </div>
 
         {/* STICKY BOTTOM BAR */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 z-50 pointer-events-none">
+        <div className="shrink-0 p-3 z-50 pointer-events-none md:absolute md:bottom-0 md:left-0 md:right-0 md:p-6">
           <div className="max-w-4xl mx-auto pointer-events-auto">
             <div className="bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl p-1 shadow-2xl flex flex-col md:flex-row items-center gap-4 pl-6 pr-2 py-2">
               <div className="flex-1 w-full text-center md:text-left overflow-hidden">
