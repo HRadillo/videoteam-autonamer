@@ -218,6 +218,7 @@ export interface MultiSelectProps {
   onChange: (values: string[]) => void;
   placeholder?: string;
   className?: string;
+  warning?: boolean;
 }
 
 export const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -227,6 +228,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   onChange,
   placeholder = 'Type to search...',
   className = '',
+  warning = false,
 }) => {
   const [q, setQ] = React.useState('');
   const [open, setOpen] = React.useState(false);
@@ -255,12 +257,16 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div ref={containerRef} className={`relative flex flex-col space-y-1.5 ${className}`}>
-      <label className="text-xs font-medium text-zinc-400 ml-1">{label}</label>
+      <label className={`text-xs font-medium ml-1 transition-colors ${warning ? 'text-red-300' : 'text-zinc-400'}`}>{label}</label>
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
         className={`h-[46px] w-full overflow-hidden bg-black/40 border text-white text-sm rounded-xl px-4 py-2.5 pr-9 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all text-left ${
-          open ? 'border-brand/60 ring-1 ring-brand/40' : 'border-white/10 hover:border-white/20'
+          warning
+            ? 'border-red-400/60 ring-1 ring-red-400/30 shadow-[0_0_18px_rgba(248,113,113,0.18)] hover:border-red-300/70'
+            : open
+              ? 'border-brand/60 ring-1 ring-brand/40'
+              : 'border-white/10 hover:border-white/20'
         }`}
         aria-expanded={open}
       >

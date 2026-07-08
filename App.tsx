@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { FILE_TYPES, PRD_OPTIONS, TEC_OPTIONS, SCENE_OPTIONS, ASPECT_RATIO_OPTIONS } from './constants';
 import { FormState, FileTypeKey, FileTypeConfig, FileTypeGroup } from './types';
 import { generateFilename, padNumber } from './utils';
@@ -64,10 +64,22 @@ const createInitialGroupStates = (): Record<FileTypeGroup, FormState> => ({
   Premiere: createInitialFormState(),
 });
 
+const PRODUCT_FIELD_TYPES = new Set<FileTypeKey>([
+  'ihp',
+  'pcc',
+  'micro',
+  'selects',
+  'screenshot',
+  'vo',
+  'premiere_intro',
+  'premiere_normal',
+]);
+
 const App: React.FC = () => {
   const [activeType, setActiveType] = useState<FileTypeKey>('ihp');
   const [formDataByGroup, setFormDataByGroup] = useState<Record<FileTypeGroup, FormState>>(createInitialGroupStates);
   const [copied, setCopied] = useState(false);
+  const [productWarningType, setProductWarningType] = useState<FileTypeKey | null>(null);
   const [showLegend, setShowLegend] = useState(false);
   const [lexiconPage, setLexiconPage] = useState<'lexicon' | 'themes'>('lexicon');
 
@@ -84,6 +96,15 @@ const App: React.FC = () => {
   const currentConfig: FileTypeConfig = FILE_TYPES.find(t => t.id === activeType) || FILE_TYPES[0];
   const activeGroup = currentConfig.group;
   const formData = formDataByGroup[activeGroup];
+  const hasVisibleProductField = activeType === 'ai' ? !formData.aiNoVisibleProduct : PRODUCT_FIELD_TYPES.has(activeType);
+  const hasSelectedProduct = activeType === 'ai' ? formData.aiProducts.length > 0 : formData.prd.trim().length > 0;
+  const showProductWarning = productWarningType === activeType && hasVisibleProductField && !hasSelectedProduct;
+
+  useEffect(() => {
+    if (productWarningType && (!hasVisibleProductField || hasSelectedProduct)) {
+      setProductWarningType(null);
+    }
+  }, [productWarningType, hasVisibleProductField, hasSelectedProduct]);
 
   // Helper to update state
   const setField = (field: keyof FormState, value: any) => {
@@ -98,6 +119,7 @@ const App: React.FC = () => {
 
   const handleTypeChange = (nextType: FileTypeKey) => {
     setActiveType(nextType);
+    setProductWarningType(null);
   };
 
   const handleBlurNumber = (field: keyof FormState, length: number) => {
@@ -153,6 +175,12 @@ const App: React.FC = () => {
   const generatedName = useMemo(() => generateFilename(activeType, formData), [activeType, formData]);
 
   const copyToClipboard = () => {
+    if (hasVisibleProductField && !hasSelectedProduct) {
+      setProductWarningType(activeType);
+    } else {
+      setProductWarningType(null);
+    }
+
     navigator.clipboard.writeText(generatedName);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -183,6 +211,7 @@ const App: React.FC = () => {
         values={productValues}
         onChange={(vals) => setField('prd', vals.join('_'))}
         placeholder="Type to search..."
+        warning={showProductWarning}
       />
     );
     const tecSelect = <Select label="Technology" options={TEC_OPTIONS} value={formData.tec} onChange={(e) => setField('tec', e.target.value)} />;
@@ -433,6 +462,7 @@ const App: React.FC = () => {
                     setField('isProductVisible', vals.length > 0);
                   }}
                   placeholder="Type to search..."
+                  warning={showProductWarning}
                 />
               </div>
             )}
@@ -743,6 +773,11 @@ const App: React.FC = () => {
             <div className="bg-black/80 backdrop-blur-2xl border border-white/10 rounded-2xl p-1 shadow-2xl flex flex-col md:flex-row items-center gap-4 pl-6 pr-2 py-2">
               <div className="flex-1 w-full text-center md:text-left overflow-hidden">
                 <div className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-0.5">Generated Output</div>
+                {showProductWarning && (
+                  <div role="alert" className="mb-1 text-xs font-medium leading-snug text-red-300">
+                    No product selected — PRD will be used. Select a product to update it.
+                  </div>
+                )}
                 <div className="text-lg md:text-xl font-mono text-white truncate selection:bg-brand/50 selection:text-black">
                   {generatedName}
                 </div>
