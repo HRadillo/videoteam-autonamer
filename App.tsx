@@ -75,11 +75,17 @@ const PRODUCT_FIELD_TYPES = new Set<FileTypeKey>([
   'premiere_normal',
 ]);
 
+const isCompleteVoSequenceType = (value: string): boolean => /^(?:SEQ\d(?:-\d)?|T\d)$/.test(value.trim());
+const isAllowedVoSequenceDraft = (value: string): boolean => (
+  /^(?:|S|SE|SEQ|SEQ\d|SEQ\d-|SEQ\d-\d|T|T\d)$/.test(value)
+);
+
 const App: React.FC = () => {
   const [activeType, setActiveType] = useState<FileTypeKey>('ihp');
   const [formDataByGroup, setFormDataByGroup] = useState<Record<FileTypeGroup, FormState>>(createInitialGroupStates);
   const [copied, setCopied] = useState(false);
   const [productWarningType, setProductWarningType] = useState<FileTypeKey | null>(null);
+  const [voSequenceWarning, setVoSequenceWarning] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [lexiconPage, setLexiconPage] = useState<'lexicon' | 'themes'>('lexicon');
 
@@ -99,12 +105,20 @@ const App: React.FC = () => {
   const hasVisibleProductField = activeType === 'ai' ? !formData.aiNoVisibleProduct : PRODUCT_FIELD_TYPES.has(activeType);
   const hasSelectedProduct = activeType === 'ai' ? formData.aiProducts.length > 0 : formData.prd.trim().length > 0;
   const showProductWarning = productWarningType === activeType && hasVisibleProductField && !hasSelectedProduct;
+  const hasCompleteVoSequence = activeType === 'vo' && isCompleteVoSequenceType(formData.sequenceType);
+  const showVoSequenceWarning = voSequenceWarning && activeType === 'vo' && !hasCompleteVoSequence;
 
   useEffect(() => {
     if (productWarningType && (!hasVisibleProductField || hasSelectedProduct)) {
       setProductWarningType(null);
     }
   }, [productWarningType, hasVisibleProductField, hasSelectedProduct]);
+
+  useEffect(() => {
+    if (voSequenceWarning && (activeType !== 'vo' || hasCompleteVoSequence)) {
+      setVoSequenceWarning(false);
+    }
+  }, [voSequenceWarning, activeType, hasCompleteVoSequence]);
 
   // Helper to update state
   const setField = (field: keyof FormState, value: any) => {
@@ -120,6 +134,7 @@ const App: React.FC = () => {
   const handleTypeChange = (nextType: FileTypeKey) => {
     setActiveType(nextType);
     setProductWarningType(null);
+    setVoSequenceWarning(false);
   };
 
   const handleBlurNumber = (field: keyof FormState, length: number) => {
@@ -145,8 +160,7 @@ const App: React.FC = () => {
 
   const handleSeqTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.toUpperCase();
-    const valid = [/^$/, /^S$/, /^SE$/, /^SEQ$/, /^SEQ[0-9]$/, /^T$/, /^T[0-9]$/];
-    if (valid.some(p => p.test(raw))) setField('sequenceType', raw);
+    if (isAllowedVoSequenceDraft(raw)) setField('sequenceType', raw);
   };
 
   const handleSceneNumChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +193,12 @@ const App: React.FC = () => {
       setProductWarningType(activeType);
     } else {
       setProductWarningType(null);
+    }
+
+    if (activeType === 'vo' && !hasCompleteVoSequence) {
+      setVoSequenceWarning(true);
+    } else {
+      setVoSequenceWarning(false);
     }
 
     navigator.clipboard.writeText(generatedName);
@@ -492,7 +512,14 @@ const App: React.FC = () => {
             {commonDate}
             {prdSelect}
             <TextInput label="Video ID" placeholder="###.##" value={formData.vidNum} onChange={handleVidNumChange} maxLength={6} />
-            <TextInput label="Sequence/Title" placeholder="SEQ1–9 or T1–9" value={formData.sequenceType} onChange={handleSeqTypeChange} maxLength={4} />
+            <TextInput
+              label="Sequence/Title"
+              placeholder="SEQ1, SEQ1-2, or T1"
+              value={formData.sequenceType}
+              onChange={handleSeqTypeChange}
+              maxLength={6}
+              warning={showVoSequenceWarning}
+            />
             
             {(formData.voType === 'gmm' || formData.voType === 'ai_gmm') && (
                <TextInput label="GMM Name" placeholder="Name" value={formData.gmmName} onChange={(e) => setField('gmmName', e.target.value)} />
@@ -776,6 +803,11 @@ const App: React.FC = () => {
                 {showProductWarning && (
                   <div role="alert" className="mb-1 text-xs font-medium leading-snug text-red-300">
                     No product selected — PRD will be used. Select a product to update it.
+                  </div>
+                )}
+                {showVoSequenceWarning && (
+                  <div role="alert" className="mb-1 text-xs font-medium leading-snug text-red-300">
+                    Enter Sequence/Title as SEQ#, SEQ#-#, or T# before copying.
                   </div>
                 )}
                 <div className="text-lg md:text-xl font-mono text-white truncate selection:bg-brand/50 selection:text-black">

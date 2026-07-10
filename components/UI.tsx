@@ -28,13 +28,18 @@ export const SectionLabel: React.FC<SectionLabelProps> = ({ children }) => (
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   className?: string;
+  warning?: boolean;
 }
 
-export const TextInput: React.FC<InputProps> = ({ label, className = '', ...props }) => (
+export const TextInput: React.FC<InputProps> = ({ label, className = '', warning = false, ...props }) => (
   <div className={`flex flex-col space-y-1.5 ${className}`}>
-    <label className="text-xs font-medium text-zinc-400 ml-1">{label}</label>
+    <label className={`text-xs font-medium ml-1 transition-colors ${warning ? 'text-red-300' : 'text-zinc-400'}`}>{label}</label>
     <input
-      className="bg-black/40 border border-white/10 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all placeholder-zinc-700"
+      className={`bg-black/40 border text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand transition-all placeholder-zinc-700 ${
+        warning
+          ? 'border-red-400/60 ring-1 ring-red-400/30 shadow-[0_0_18px_rgba(248,113,113,0.18)]'
+          : 'border-white/10'
+      }`}
       autoComplete="off"
       {...props}
     />
