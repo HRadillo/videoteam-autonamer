@@ -75,9 +75,9 @@ const PRODUCT_FIELD_TYPES = new Set<FileTypeKey>([
   'premiere_normal',
 ]);
 
-const isCompleteVoSequenceType = (value: string): boolean => /^(?:SEQ\d(?:-\d)?|T\d)$/.test(value.trim());
+const isCompleteVoSequenceType = (value: string): boolean => /^(?:SEQ\d{1,4}(?:-\d{1,4})?|T\d{1,4})$/.test(value.trim());
 const isAllowedVoSequenceDraft = (value: string): boolean => (
-  /^(?:|S|SE|SEQ|SEQ\d|SEQ\d-|SEQ\d-\d|T|T\d)$/.test(value)
+  /^(?:|S|SE|SEQ(?:\d{0,4}|\d{1,4}-\d{0,4})|T\d{0,4})$/.test(value)
 );
 
 const App: React.FC = () => {
@@ -514,10 +514,10 @@ const App: React.FC = () => {
             <TextInput label="Video ID" placeholder="###.##" value={formData.vidNum} onChange={handleVidNumChange} maxLength={6} />
             <TextInput
               label="Sequence/Title"
-              placeholder="SEQ1, SEQ1-2, or T1"
+              placeholder="SEQ9999, SEQ1-9999, or T9999"
               value={formData.sequenceType}
               onChange={handleSeqTypeChange}
-              maxLength={6}
+              maxLength={12}
               warning={showVoSequenceWarning}
             />
             
