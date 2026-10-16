@@ -230,7 +230,7 @@ case 'screenshot': {
 }
 
     case 'stock':
-      return `STOCK_${_plat}_${_vidNum}_${_keys}`;
+      return data.stockUnknown ? `STOCK_${_keys}` : `STOCK_${_plat}_${_vidNum}_${_keys}`;
 
     case 'ai': {
       // Base parts

@@ -29,6 +29,7 @@ const createInitialFormState = (): FormState => ({
   sequenceType: '',
   
   // Toggles
+  stockUnknown: false,
   subType: 'video', 
   voType: 'gmm',
   aiType: 'generic',
@@ -430,8 +431,15 @@ const App: React.FC = () => {
       case 'stock':
         return (
           <>
-            {platformInput}
-            <TextInput label="File ID" placeholder="Number" value={formData.vidNum} onChange={(e) => setField('vidNum', e.target.value)} />
+            <div className="md:col-span-2">
+              <Checkbox label="Unknown" checked={formData.stockUnknown} onChange={(v) => setField('stockUnknown', v)} />
+            </div>
+            {!formData.stockUnknown && (
+              <>
+                {platformInput}
+                <TextInput label="File ID" placeholder="Number" value={formData.vidNum} onChange={(e) => setField('vidNum', e.target.value)} />
+              </>
+            )}
             {keywordsInput}
           </>
         );

@@ -26,6 +26,7 @@ export interface FormState {
   sequenceType: string;
 
   // Logic Toggles
+  stockUnknown: boolean;
   subType: string;
   voType: 'gmm' | 'ai_gmm' | 'ai_pcc' | 'tiktok' | 'random_ai';
   aiType: 'generic' | 'from_pcc' | 'from_ihp' | 'from_gmm';
