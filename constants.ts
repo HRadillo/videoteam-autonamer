@@ -91,6 +91,12 @@ export const FILE_TYPES: FileTypeConfig[] = [
     group: 'Assets',
   },
 
+  {
+    id: 'agency_ads',
+    label: 'Agency Ads',
+    group: 'Assets',
+  },
+
   // AI
   {
     id: 'ai',

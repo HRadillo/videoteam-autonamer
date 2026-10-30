@@ -232,6 +232,13 @@ case 'screenshot': {
     case 'stock':
       return data.stockUnknown ? `STOCK_${_keys}` : `STOCK_${_plat}_${_vidNum}_${_keys}`;
 
+    case 'agency_ads': {
+      // Agency descriptions preserve spaces and casing, unlike asset keywords.
+      const description = keywords.trim() || 'brief description';
+      const adNumber = data.agencyAdNum ? padNumber(data.agencyAdNum, 2) : '##';
+      return `EXT_${_prd}_${description} ${adNumber} (${FULL_DATE})`;
+    }
+
     case 'ai': {
       // Base parts
       let parts = ['AI'];

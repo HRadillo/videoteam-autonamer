@@ -5,6 +5,7 @@ export interface FormState {
   // Identifiers
   ihpNum: string;
   micNum: string;
+  agencyAdNum: string;
   vidNum: string;
   sceneNum: string;
   timecode: string; // New: For Retouched/Tuned start frames
@@ -61,6 +62,7 @@ export type FileTypeKey =
   | 'selects'
   | 'screenshot'
   | 'stock'
+  | 'agency_ads'
   | 'ai'
   | 'vo'
   | 'audio_assets'

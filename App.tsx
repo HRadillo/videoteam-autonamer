@@ -12,6 +12,7 @@ const createInitialFormState = (): FormState => ({
   date: new Date(),
   ihpNum: '',
   micNum: '',
+  agencyAdNum: '',
   vidNum: '',
   sceneNum: '',
   timecode: '',
@@ -66,6 +67,7 @@ const createInitialGroupStates = (): Record<FileTypeGroup, FormState> => ({
 });
 
 const PRODUCT_FIELD_TYPES = new Set<FileTypeKey>([
+  'agency_ads',
   'ihp',
   'pcc',
   'micro',
@@ -444,6 +446,28 @@ const App: React.FC = () => {
           </>
         );
 
+      case 'agency_ads':
+        return (
+          <>
+            {commonDate}
+            {prdSelect}
+            <TextInput
+              label="Brief Description"
+              placeholder="e.g. CGI animation of SkinShield ingredients benefits"
+              value={formData.keywords}
+              onChange={(e) => setField('keywords', e.target.value)}
+            />
+            <TextInput
+              label="Ad #"
+              placeholder="01"
+              value={formData.agencyAdNum}
+              onChange={(e) => setField('agencyAdNum', e.target.value.replace(/\D/g, ''))}
+              onBlur={() => handleBlurNumber('agencyAdNum', 2)}
+              inputMode="numeric"
+            />
+          </>
+        );
+
       case 'ai':
         return (
           <>
@@ -793,7 +817,9 @@ const App: React.FC = () => {
                     <div>
                         <h4 className="text-sm font-semibold text-brand">Smart Formatting Active</h4>
                         <p className="text-xs text-brand/60 mt-1 leading-relaxed">
-                            Spaces removed. Keywords hyphenated. Numbers padded.
+                            {activeType === 'agency_ads'
+                              ? 'Description spacing and capitalization preserved. Numbers padded.'
+                              : 'Spaces removed. Keywords hyphenated. Numbers padded.'}
                         </p>
                     </div>
                 </div>
