@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { FILE_TYPES, PRD_OPTIONS, TEC_OPTIONS, SCENE_OPTIONS, ASPECT_RATIO_OPTIONS } from './constants';
 import { FormState, FileTypeKey, FileTypeConfig, FileTypeGroup } from './types';
 import { generateFilename, padNumber } from './utils';
-import { TextInput, Select, Card, ActionButton, SegmentedControl, Checkbox, SectionLabel, MultiSelect, SearchableSelect } from './components/UI';
+import { TextInput, Select, Card, ActionButton, SegmentedControl, Checkbox, SectionLabel, MultiSelect, SearchableSelect, sortOptionsByLabel } from './components/UI';
 import { CopyIcon, CheckIcon, InfoIcon, MagicIcon, VideoIcon } from './components/Icons';
 
 import { INTRO_THEME, HOOK_THEME, AUDIO, CONCEPT_THEME_GUIDES } from './lexiconData';
@@ -479,9 +479,9 @@ const App: React.FC = () => {
                 onChange={(e) => setField('aiType', e.target.value)}
               >
                 <option value="generic">AI Image/Footage (Standard)</option>
-                <option value="from_pcc">Based on PCC Asset</option>
-                <option value="from_ihp">Based on IHP Asset</option>
                 <option value="from_gmm">Based on GMM Asset</option>
+                <option value="from_ihp">Based on IHP Asset</option>
+                <option value="from_pcc">Based on PCC Asset</option>
               </select>
             </div>
             
@@ -534,11 +534,11 @@ const App: React.FC = () => {
                 value={formData.voType}
                 onChange={(e) => setField('voType', e.target.value)}
               >
-                <option value="gmm">Standard GMM</option>
                 <option value="ai_gmm">AI GMM</option>
                 <option value="ai_pcc">AI PCC</option>
-                <option value="tiktok">TikTok</option>
                 <option value="random_ai">Random AI</option>
+                <option value="gmm">Standard GMM</option>
+                <option value="tiktok">TikTok</option>
               </select>
             </div>
             {commonDate}
@@ -780,7 +780,7 @@ const App: React.FC = () => {
                 value={activeType}
                 onChange={(e) => handleTypeChange(e.target.value as FileTypeKey)}
             >
-                {FILE_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                {sortOptionsByLabel(FILE_TYPES).map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
             </select>
         </div>
 

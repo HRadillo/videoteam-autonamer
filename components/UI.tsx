@@ -1,5 +1,9 @@
 import React, { ReactNode } from 'react';
 
+// Sort display options on a copy; preserve source and selection order.
+export const sortOptionsByLabel = <T extends { label: string },>(options: readonly T[]): T[] =>
+  [...options].sort((a, b) => a.label.localeCompare(b.label, 'en', { sensitivity: 'base' }));
+
 // --- WRAPPERS ---
 
 export interface CardProps {
@@ -61,7 +65,7 @@ export const Select: React.FC<SelectProps> = ({ label, options, className = '', 
         {...props}
       >
         <option value="" className="bg-zinc-900 text-zinc-500">Select...</option>
-        {options.map((opt) => (
+        {sortOptionsByLabel<SelectProps['options'][number]>(options).map((opt) => (
           <option key={opt.value} value={opt.value} className="bg-zinc-900 text-white">
             {opt.label} {opt.desc ? `— ${opt.desc}` : ''}
           </option>
@@ -105,8 +109,9 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
 
   const filtered = React.useMemo(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return options;
-    return options.filter(o => `${o.value} ${o.label} ${o.desc ?? ''}`.toLowerCase().includes(s));
+    const sorted = sortOptionsByLabel<SearchableSelectProps['options'][number]>(options);
+    if (!s) return sorted;
+    return sorted.filter(o => `${o.value} ${o.label} ${o.desc ?? ''}`.toLowerCase().includes(s));
   }, [q, options]);
 
   React.useEffect(() => {
@@ -240,8 +245,9 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const filtered = React.useMemo(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return options;
-    return options.filter(o => `${o.value} ${o.label} ${o.desc ?? ''}`.toLowerCase().includes(s));
+    const sorted = sortOptionsByLabel<MultiSelectProps['options'][number]>(options);
+    if (!s) return sorted;
+    return sorted.filter(o => `${o.value} ${o.label} ${o.desc ?? ''}`.toLowerCase().includes(s));
   }, [q, options]);
 
   React.useEffect(() => {
