@@ -10,12 +10,19 @@ export const PRD_OPTIONS: DropdownOption[] = [
   { value: 'ASU', label: 'ASU', desc: 'Acne Supplement' },
   { value: 'CSU', label: 'CSU', desc: 'Collagen Supplement' },
   { value: 'ECZ', label: 'ECZ', desc: 'Eczema' },
-  { value: 'NEC', label: 'NEC', desc: 'Neck' },
+  { value: 'NEC', label: 'NEC', desc: 'Fibrexa' },
   { value: 'HYP', label: 'HYP', desc: 'Hyperpigmentation' },
   { value: 'TWL', label: 'TWL', desc: 'Cleansing Towels' },
   { value: 'AORL', label: 'AORL', desc: 'Acne Oral' },
   { value: 'ATOP', label: 'ATOP', desc: 'Acne Topical' },
   { value: 'ACLN', label: 'ACLN', desc: 'Acne Cleansing' },
+  { value: 'ASC', label: 'ASC', desc: 'Ascend' },
+  { value: 'GLU', label: 'GLU', desc: 'Gluthatione' },
+  { value: 'SER', label: 'SER', desc: 'Sermorelin' },
+  { value: 'NAD', label: 'NAD', desc: 'NAD +' },
+  { value: 'HSU', label: 'HSU', desc: 'Folixa' },
+  { value: 'KPL', label: 'KPL', desc: 'Exyrone' },
+  { value: 'BPG', label: 'BPG', desc: 'Pending definition' },
 ];
 
 export const TEC_OPTIONS: DropdownOption[] = [

@@ -89,12 +89,19 @@ Generate a structured, deterministic naming string based on user inputs, followi
 | ASU | Acne Supplement |
 | CSU | Collagen Supplement |
 | ECZ | Eczema |
-| NEC | Neck |
+| NEC | Fibrexa |
 | HYP | Hyperpigmentation |
 | TWL | Towels |
 | AORL | Acne Oral |
 | ATOP | Acne Topical |
 | ACLN | Acne Cleansing |
+| ASC | Ascend |
+| GLU | Gluthatione |
+| SER | Sermorelin |
+| NAD | NAD + |
+| HSU | Folixa |
+| KPL | Exyrone |
+| BPG | Pending definition |
 
 These codes must remain consistent and never be renamed dynamically.
 
